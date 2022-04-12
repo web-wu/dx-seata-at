@@ -1,0 +1,61 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: dx-bank1
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test_bank1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: innosen
+
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:8000/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+mabatis:
+  type-aliases-package: com.tabwu.dx.entity
+logging:
+  level:
+    com.tabwu.dx: debug
+
+#配置服务，将服务注册到TC上
+seata:
+  application-id: bank1             # 注册到TC上的服务名称     自定义
+  tx-service-group: dx-tx-group     # 注册到TC上的服务组名称   自定义
+  service:
+    vgroup-mapping:
+      dx-tx-group: seata-server     # seata服务端上注册中心的application名称
+  registry:
+    type: eureka
+    eureka:
+      service-url: http://${eureka.instance.hostname}:8000/eureka
+      weight: 1
+
+#开启feign的服务降级，请求与响应的数据压缩
+feign:
+  hystrix:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+#设置hystrix的服务隔离级别 默认为线程池隔离
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 10000
+#          strategy: SEMAPHORE    #改为 信号量隔离

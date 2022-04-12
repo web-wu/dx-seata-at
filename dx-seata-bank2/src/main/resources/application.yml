@@ -1,0 +1,58 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: dx-bank2
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test_bank2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: innosen
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:8000/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+mabatis:
+  type-aliases-package: com.tabwu.dx.entity
+logging:
+  level:
+    com.tabwu.dx: debug
+
+seata:
+  application-id: bank2
+  tx-service-group: dx-tx-group
+  service:
+    vgroup-mapping:
+      dx-tx-group: seata-server
+  registry:
+    type: eureka
+    eureka:
+      service-url: http://${eureka.instance.hostname}:8000/eureka
+      weight: 1
+
+feign:
+  hystrix:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 10000
+#          strategy: SEMAPHORE
